@@ -9,7 +9,9 @@ on:
   # but only for the master branch
   push:
     branches:
+      - main
       - dev
+
   pull_request:
     branches:
       - main
