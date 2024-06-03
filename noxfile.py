@@ -12,12 +12,12 @@ def test(session):
 @nox.session(python=PY_VERSIONS)
 def formatcheck(session):
     session.install("black")
-    session.run("black", "--check","src/", "test/")
+    session.run("black", "--check", "src/", "test/")
 
 
 @nox.session(python=PY_VERSIONS)
 def typecheck(session):
-    session.install("mypy", "pytest")
+    session.install("mypy", "pytest", "sqlalchemy", "sqlalchemy_utils")
     session.run("mypy", "src/", "test/")
 
 
