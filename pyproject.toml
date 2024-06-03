@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "task-rest-api"
+authors = [
+    {name = "Nathan Dedman", email = "nathan.r.dedman@gmail.com"},
+]
+description = "A simple REST API facillitating CRUD operations for tasks"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "fastapi==0.111.0",
+    'importlib-metadata; python_version<"3.10"',
+]
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+develop = ["black==24.4.2","pytest==8.2.1","mypy==1.10.0","nox==2024.4.15","pylint==3.2.2"]
+
+
