@@ -15,9 +15,14 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
+    "alembic==1.13.1",
     "fastapi==0.111.0",
     "bcrypt==4.0.1",
+    "psycopg2-binary==2.9.9",
+    "SQLAlchemy==2.0.30",
+    "SQLAlchemy-Utils==0.41.2",
     'importlib-metadata; python_version<"3.10"',
+    
 ]
 dynamic = ["version"]
 
@@ -25,6 +30,12 @@ dynamic = ["version"]
 where = ["src"]
 
 [project.optional-dependencies]
-develop = ["black==24.4.2","pytest==8.2.1","mypy==1.10.0","nox==2024.4.15","pylint==3.2.2"]
+develop = [
+    "black==24.4.2",
+    "pytest==8.2.1",
+    "mypy==1.10.0",
+    "nox==2024.4.15",
+    "pylint==3.2.2"
+    ]
 
 
