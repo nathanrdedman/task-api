@@ -19,7 +19,7 @@ def get_db() -> Generator[Session, None, None]:
     connect to the database
 
     Yields:
-        Session: Authenticated DB session connection
+        Session: DB session
     """
     db = SessionLocal()
     try:

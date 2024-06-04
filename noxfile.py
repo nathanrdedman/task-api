@@ -18,6 +18,7 @@ def formatcheck(session):
 @nox.session(python=PY_VERSIONS)
 def typecheck(session):
     session.install("mypy", "pytest", "sqlalchemy", "sqlalchemy_utils")
+    session.run("mypy", "--install-types", "--non-interactive")
     session.run("mypy", "src/", "test/")
 
 

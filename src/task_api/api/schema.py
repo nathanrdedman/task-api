@@ -1,8 +1,6 @@
 from typing import Optional, Union
 
-from pydantic import (BaseModel, ConfigDict, Field, field_serializer,
-                      field_validator)
-from sqlalchemy_utils import Choice, ChoiceType, Country
+from pydantic import BaseModel, field_validator
 
 
 class Token(BaseModel):
@@ -26,6 +24,9 @@ class Task(TaskBase):
     status: str
     id: int
 
+    # We use a field validator here to check
+    # and return the value field of the Choice
+    # parameter for the status value.
     @field_validator("status", mode="before")
     @classmethod
     def serialize_status(cls, status):
@@ -49,8 +50,3 @@ class UserCreate(BaseModel):
     password: str
     username: str
     email: str
-
-
-class UserInDB(User):
-    id: int
-    hashed_password: str
