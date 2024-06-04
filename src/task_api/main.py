@@ -7,13 +7,23 @@ from pydantic.types import List
 from sqlalchemy.orm import Session
 
 from task_api.api.schema import Task, TaskCreate, Token, User, UserCreate
-from task_api.auth.oauth import (ACCESS_TOKEN_EXPIRE_MINUTES,
-                                 authenticate_user, create_access_token,
-                                 get_current_active_user, oauth2_scheme)
+from task_api.auth.oauth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    authenticate_user,
+    create_access_token,
+    get_current_active_user,
+    oauth2_scheme,
+)
 from task_api.db.connect import engine, get_db
-from task_api.db.operation import (archive_task, modify_task_status, new_user,
-                                   read_status_values, read_task, read_tasks,
-                                   write_task)
+from task_api.db.operation import (
+    archive_task,
+    modify_task_status,
+    new_user,
+    read_status_values,
+    read_task,
+    read_tasks,
+    write_task,
+)
 
 app = FastAPI()
 
