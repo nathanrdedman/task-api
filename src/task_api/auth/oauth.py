@@ -2,15 +2,14 @@ import hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 
-import bcrypt
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from task_api.api.schema import TokenData, UserInDB
+from task_api.auth.utils import verify_password
 from task_api.db.connect import get_db
 from task_api.db.models import User
 from task_api.db.operation import get_user_by_username
@@ -22,19 +21,6 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf8"), bcrypt.gensalt()).decode("utf8")
-
-
-def verify_password(plain_password, hashed_password):
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 
 def authenticate_user(db, username: str, password: str):

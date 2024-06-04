@@ -1,28 +1,56 @@
+from typing import Union
+
 from sqlalchemy.orm import Session
 
 from ..api import schema
+from ..auth.utils import hash_password
 from . import models
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int) -> Union[models.User, None]:
+    """Get the user object by user id
+
+    Args:
+        db (Session): Database session
+        user_id (int): User id
+
+    Returns:
+        Union[models.User, None]: User object or None
+    """
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_username(db, username: str):
+def get_user_by_username(db, username: str) -> Union[models.User, None]:
+    """Get the user object by username
+
+    Args:
+        db (_type_): Database session
+        username (str): Username
+
+    Returns:
+        Union[models.User, None]: User object or None
+    """
     return db.query(models.User).filter(models.User.username == username).first()
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> Union[models.User, None]:
+    """_summary_
+
+    Args:
+        db (Session): Database session
+        email (str): Email address
+
+    Returns:
+        Union[models.User, None]: User object or None
+    """
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
-def create_user(db: Session, user: schema.UserCreate):
-    fake_hashed_password = user.password + "notreallyhashed"
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
+def new_user(db: Session, user: schema.UserCreate):
+    hashpassword = hash_password(user.password)
+    db_user = models.User(
+        email=user.email, hashed_password=hashpassword, username=user.username
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -53,20 +81,12 @@ def write_task(db: Session, description: str, user_id: int):
     db.add(task)
     db.commit()
     db.refresh(task)
-    return task.id
+    return task
 
 
 def archive_task(db: Session, task_id: int, user_id: int):
     task = read_task(db=db, task_id=task_id, user_id=user_id)
-
-    # Explicit assignment of values - could generalise
-    deleted_task = models.DeletedTask(
-        description=task.description,
-        id=task.id,
-        user_id=task.user_id,
-        status=task.status,
-    )
-
+    deleted_task = models.DeletedTask(**task.dict())
     db.add(deleted_task)
     db.delete(task)
     db.commit()
@@ -84,5 +104,5 @@ def modify_task_status(db: Session, task_id: int, user_id: int, status: str):
     return task
 
 
-def read_status_values():
-    return [t[0] for t in models.STATUS_OPTIONS]
+def read_status_values() -> dict:
+    return dict(models.STATUS_OPTIONS)

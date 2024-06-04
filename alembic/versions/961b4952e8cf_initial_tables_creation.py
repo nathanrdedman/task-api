@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy import Date, Integer, MetaData, Sequence, String
 
 from alembic import op
-from task_api.auth.oauth import hash_password
+from task_api.auth.utils import hash_password
 
 # revision identifiers, used by Alembic.
 revision: str = "961b4952e8cf"
@@ -23,6 +23,16 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     op.execute("create sequence TASK_ID_SEQ")
+
+    user_table = op.create_table(
+        "user",
+        sa.Column(
+            "id", sa.Integer, primary_key=True, nullable=False, autoincrement=True
+        ),
+        sa.Column("username", sa.String(1000), nullable=False, unique=True),
+        sa.Column("email", sa.String(100), nullable=False, unique=True),
+        sa.Column("hashed_password", sa.String(1000), nullable=False, unique=True),
+    )
 
     op.create_table(
         "task",
@@ -40,12 +50,12 @@ def upgrade() -> None:
         sa.Column("status", sa.String(15), nullable=False),
     )
 
-    user_table = op.create_table(
-        "user",
-        sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("username", sa.String(1000), nullable=False),
-        sa.Column("email", sa.String(100), nullable=False),
-        sa.Column("hashed_password", sa.String(1000), nullable=False),
+    op.create_foreign_key(
+        "fk_",
+        "location_messages",
+        "campaigns",
+        ["campaign_id"],
+        ["id"],
     )
 
     op.bulk_insert(

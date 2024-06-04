@@ -8,8 +8,7 @@ from alembic import context
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config = context.config
-db_url = os.environ.get("SQLALCHEMY_DATABASE_URL")
+db_url: str = os.environ.get("SQLALCHEMY_DATABASE_URL", "undefined")
 config.set_section_option(config.config_ini_section, "sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.

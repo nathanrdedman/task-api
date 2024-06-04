@@ -1,6 +1,8 @@
-from typing import Union
+from typing import Optional, Union
 
-from pydantic import BaseModel
+from pydantic import (BaseModel, ConfigDict, Field, field_serializer,
+                      field_validator)
+from sqlalchemy_utils import Choice, ChoiceType, Country
 
 
 class Token(BaseModel):
@@ -21,6 +23,15 @@ class TaskCreate(TaskBase):
 
 
 class Task(TaskBase):
+    status: str
+    id: int
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def serialize_status(cls, status):
+        if status:
+            return status.value
+
     class Config:
         from_attributes = True
 
@@ -28,14 +39,16 @@ class Task(TaskBase):
 class User(BaseModel):
     id: int
     username: str
-    email: Union[str, None] = None
+    email: str
 
     class Config:
         from_attributes = True
 
 
-class UserCreate(User):
+class UserCreate(BaseModel):
     password: str
+    username: str
+    email: str
 
 
 class UserInDB(User):

@@ -4,8 +4,8 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-
-from task_api.api.schema import Task, Token, User
+from pydantic.types import List
+from task_api.api.schema import Task, TaskBase, Token, User, UserCreate, TaskCreate
 from task_api.auth.oauth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_user,
@@ -13,7 +13,7 @@ from task_api.auth.oauth import (
     get_current_active_user,
     oauth2_scheme,
 )
-from task_api.db import models
+
 from task_api.db.connect import engine, get_db
 from task_api.db.operation import (
     archive_task,
@@ -22,10 +22,10 @@ from task_api.db.operation import (
     read_task,
     read_tasks,
     write_task,
+    new_user,
 )
 
 app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
 
 
 @app.get("/healthz")
@@ -33,7 +33,7 @@ async def root():
     return {"status": "OK"}
 
 
-@app.get("/task/{task_id}")
+@app.get("/task/{task_id}", response_model=Task)
 async def get_task(
     current_user: Annotated[User, Depends(get_current_active_user)],
     task_id: int,
@@ -49,7 +49,7 @@ async def get_task_status(
     return read_status_values()
 
 
-@app.patch("/task/{task_id}/status/{status}")
+@app.patch("/task/{task_id}/status/{status}", response_model=Task)
 async def task_status(
     current_user: Annotated[User, Depends(get_current_active_user)],
     task_id: int,
@@ -61,7 +61,7 @@ async def task_status(
     )
 
 
-@app.get("/task/")
+@app.get("/task/", response_model=List[Task])
 async def get_tasks(
     current_user: Annotated[User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
@@ -69,16 +69,16 @@ async def get_tasks(
     return read_tasks(db=db, user_id=current_user.id)
 
 
-@app.post("/task/")
+@app.post("/task/", response_model=Task)
 async def create_task(
     current_user: Annotated[User, Depends(get_current_active_user)],
-    task: Task,
+    task: TaskCreate,
     db: Session = Depends(get_db),
 ):
     return write_task(db=db, description=task.description, user_id=current_user.id)
 
 
-@app.delete("/task/{task_id}")
+@app.delete("/task/{task_id}", response_model=Task)
 async def delete_task(
     current_user: Annotated[User, Depends(get_current_active_user)],
     task_id: int,
@@ -107,8 +107,17 @@ async def login_for_access_token(
 
 
 @app.get("/user", response_model=User)
-async def read_users_me(
+async def get_user(
     current_user: Annotated[User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
 ):
     return current_user
+
+
+@app.post("/user", response_model=User)
+async def create_user(
+    create_user: UserCreate,
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
+):
+    return new_user(db=db, user=create_user)
