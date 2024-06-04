@@ -2,9 +2,9 @@ from typing import List, Union
 
 from sqlalchemy.orm import Session
 
-from ..api import schema
-from ..auth.utils import hash_password
-from . import models
+from task_api.api import schema
+from task_api.auth.utils import hash_password
+from task_api.db import models
 
 
 def get_user(db: Session, user_id: int) -> Union[models.User, None]:
