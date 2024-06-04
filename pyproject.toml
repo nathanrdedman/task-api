@@ -38,4 +38,7 @@ develop = [
     "pylint==3.2.2"
     ]
 
+[tool.mypy]
+ignore_missing_imports = true
+
 
