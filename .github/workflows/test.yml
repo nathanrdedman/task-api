@@ -53,7 +53,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: fjwillemsen/setup-nox2@v3.0.0
-    - name: Run formatting check
+    - name: Run Isort for import order check
       run: nox -s importscheck
   test:
     needs: 

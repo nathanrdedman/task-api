@@ -13,10 +13,7 @@ class TokenData(BaseModel):
 
 
 class TaskBase(BaseModel):
-    id: int
     description: str
-    status: str
-    user: str
 
 
 class TaskCreate(TaskBase):
@@ -28,30 +25,19 @@ class Task(TaskBase):
         from_attributes = True
 
 
-# class UserBase(BaseModel):
-#     id: int
-#     username: str
-#     email: str
-
 class User(BaseModel):
-    id
+    id: int
     username: str
-    email: Union[str, None] = None    
-    
+    email: Union[str, None] = None
+
     class Config:
         from_attributes = True
+
 
 class UserCreate(User):
     password: str
 
 
-# class User(UserBase):
-#     id: int
-#     tasks: list[Task] = []
-
-#     class Config:
-#         orm_mode = True
-
-
 class UserInDB(User):
+    id: int
     hashed_password: str

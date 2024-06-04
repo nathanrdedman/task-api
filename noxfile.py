@@ -25,3 +25,9 @@ def typecheck(session):
 def lint(session):
     session.install("pylint")
     session.run("pylint", "src/", "test/")
+
+
+@nox.session(python=PY_VERSIONS)
+def importscheck(session):
+    session.install("isort")
+    session.run("isort", "--check", "src/", "test/")
