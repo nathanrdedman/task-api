@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator
+from pydantic import (BaseModel, ConfigDict, Field, field_serializer,
+                      field_validator)
 from sqlalchemy_utils import Choice, ChoiceType, Country
 
 

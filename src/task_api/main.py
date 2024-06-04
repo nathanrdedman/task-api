@@ -3,27 +3,18 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 from pydantic.types import List
-from task_api.api.schema import Task, TaskBase, Token, User, UserCreate, TaskCreate
-from task_api.auth.oauth import (
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    authenticate_user,
-    create_access_token,
-    get_current_active_user,
-    oauth2_scheme,
-)
+from sqlalchemy.orm import Session
 
+from task_api.api.schema import (Task, TaskBase, TaskCreate, Token, User,
+                                 UserCreate)
+from task_api.auth.oauth import (ACCESS_TOKEN_EXPIRE_MINUTES,
+                                 authenticate_user, create_access_token,
+                                 get_current_active_user, oauth2_scheme)
 from task_api.db.connect import engine, get_db
-from task_api.db.operation import (
-    archive_task,
-    modify_task_status,
-    read_status_values,
-    read_task,
-    read_tasks,
-    write_task,
-    new_user,
-)
+from task_api.db.operation import (archive_task, modify_task_status, new_user,
+                                   read_status_values, read_task, read_tasks,
+                                   write_task)
 
 app = FastAPI()
 
