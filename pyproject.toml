@@ -2,12 +2,16 @@
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
+local_scheme = "dirty-tag"
+write_to = "src/task_api/_version.py"
+
 [project]
-name = "task-rest-api"
+name = "task-api"
 authors = [
     {name = "Nathan Dedman", email = "nathan.r.dedman@gmail.com"},
 ]
-description = "A simple REST API facillitating CRUD operations for tasks"
+description = "A simple REST API facillitating CRUD operations for task management."
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -15,8 +19,15 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 dependencies = [
-    "fastapi==0.111.0",
+    "alembic==1.13.1",
+    "bcrypt==4.0.1",
+    "fastapi==0.111.0",    
+    "pyjwt==2.8.0",
+    "psycopg2-binary==2.9.9",
+    "SQLAlchemy==2.0.30",
+    "SQLAlchemy-Utils==0.41.2",
     'importlib-metadata; python_version<"3.10"',
+    
 ]
 dynamic = ["version"]
 
@@ -24,6 +35,30 @@ dynamic = ["version"]
 where = ["src"]
 
 [project.optional-dependencies]
-develop = ["black==24.4.2","pytest==8.2.1","mypy==1.10.0","nox==2024.4.15","pylint==3.2.2"]
+develop = [
+    "black==24.4.2",   
+    "isort==5.13.2", 
+    "mypy==1.10.0",
+    "nox==2024.4.15",
+    "pylint==3.2.2",
+    "pytest==8.2.1",
+    "pytest-asyncio==0.23.7",
+    ]
 
+[tool.mypy]
+ignore_missing_imports = true
+cache_dir = ".cache/mypy_cache"
+files = [
+    'src/',
+    'tests/',
+    'noxfile.py',
+]
 
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.pylint.master]
+ignore-paths = "src/task_api/_version.py"
