@@ -1,5 +1,5 @@
 # Git
-.git
+# .git
 .gitignore
 .gitattributes
 
@@ -63,3 +63,9 @@ venv/
 
 # VS Code
 .vscode/
+
+# Misc
+images/
+tests/
+*.db
+README.md

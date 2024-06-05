@@ -1,10 +1,18 @@
 FROM python:3.10-slim
+
 ARG SQLALCHEMY_DATABASE_URL
+ENV SQLALCHEMY_DATABASE_URL=$SQLALCHEMY_DATABASE_URL
 
-WORKDIR /opt/app
+COPY . /opt/
+WORKDIR /opt/
 
-COPY . /opt/app
+RUN apt-get update \
+    && apt-get install \    
+    -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "task_api.main:app", "--host", "0.0.0.0", "--port", "80"]
+COPY deploy/start.sh /start.sh
+RUN chmod +x  /start.sh
+CMD ["/run.sh"]
