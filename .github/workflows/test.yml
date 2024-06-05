@@ -55,7 +55,7 @@ jobs:
     - uses: fjwillemsen/setup-nox2@v3.0.0
     - name: Run Isort for import order check
       run: nox -s importscheck
-  test:
+  tests:
     needs: 
       - linting_check
       - type_check
