@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def authenticate_user(db, username: str, password: str) -> Union[User, bool]:
+def authenticate_user(db, username: str, password: str) -> Union[User, None]:
     """Given a set of credentials, authenticate the user
     via stored user object, verifying the password against the
     hashed password.
@@ -36,10 +36,10 @@ def authenticate_user(db, username: str, password: str) -> Union[User, bool]:
     user = get_user_by_username(db, username)
 
     if not user:
-        return False
+        return None
 
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
 
     return user
 

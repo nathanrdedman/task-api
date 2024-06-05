@@ -33,6 +33,34 @@ async def root():
     return {"status": "OK"}
 
 
+@app.post("/task/", response_model=Task)
+async def create_task(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    task: TaskCreate,
+    db: Session = Depends(get_db),
+) -> Task:
+    """Create a new task with the supplied task description.
+    Newly created tasks are set with status='Pending'
+
+    Args:
+        Request body (TaskCreate): Payload with 'description' field.
+
+    Raises:
+        HTTPException: Failed to create new task
+
+    Returns:
+        Task: Newly created task object
+    """
+    try:
+        task = write_task(db=db, description=task.description, user_id=current_user.id)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to create task for user '{current_user.username}': {err}",
+        )
+    return task
+
+
 @app.get("/task/{task_id}", response_model=Task)
 async def get_task(
     current_user: Annotated[User, Depends(get_current_active_user)],
@@ -59,6 +87,33 @@ async def get_task(
             detail=f"Task ({task_id=}) not found for user '{current_user.username}': {err}",
         )
     return task
+
+
+@app.delete("/task/{task_id}", response_model=Task)
+async def delete_task(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    task_id: int,
+    db: Session = Depends(get_db),
+) -> Task:
+    """Delete a task by moving to the deleted tasks table
+
+    Args:
+        task_id (int): Task ID
+
+    Raises:
+        HTTPException: Task does not exist or is not found for user
+
+    Returns:
+        Task: task object
+    """
+    try:
+        archived_task = archive_task(db=db, task_id=task_id, user_id=current_user.id)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to delete task ({task_id=}) for user '{current_user.username}': {err}",
+        )
+    return archived_task
 
 
 @app.get("/task_status")
@@ -118,61 +173,6 @@ async def get_tasks(
     return read_tasks(db=db, user_id=current_user.id)
 
 
-@app.post("/task/", response_model=Task)
-async def create_task(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-    task: TaskCreate,
-    db: Session = Depends(get_db),
-) -> Task:
-    """Create a new task with the supplied task description.
-    Newly created tasks are set with status='Pending'
-
-    Args:
-        Request body (TaskCreate): Payload with 'description' field.
-
-    Raises:
-        HTTPException: Failed to create new task
-
-    Returns:
-        Task: Newly created task object
-    """
-    try:
-        task = write_task(db=db, description=task.description, user_id=current_user.id)
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to create task for user '{current_user.username}': {err}",
-        )
-    return task
-
-
-@app.delete("/task/{task_id}", response_model=Task)
-async def delete_task(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-    task_id: int,
-    db: Session = Depends(get_db),
-) -> Task:
-    """Delete a task by moving to the deleted tasks table
-
-    Args:
-        task_id (int): Task ID
-
-    Raises:
-        HTTPException: Task does not exist or is not found for user
-
-    Returns:
-        Task: task object
-    """
-    try:
-        archived_task = archive_task(db=db, task_id=task_id, user_id=current_user.id)
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to delete task ({task_id=}) for user '{current_user.username}': {err}",
-        )
-    return archived_task
-
-
 @app.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -189,17 +189,20 @@ async def login_for_access_token(
     Returns:
         Token: JWT token
     """
-    user = authenticate_user(db, form_data.username, form_data.password)
-    if not user:
+    user_in = authenticate_user(db, form_data.username, form_data.password)
+
+    if not user_in:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user_in.username}, expires_delta=access_token_expires
     )
+
     return Token(access_token=access_token, token_type="bearer")
 
 
