@@ -19,7 +19,7 @@ on:
 jobs:
   # This workflow contains two jobs "linting" and "test"
 
-  linting:
+  linting_check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -28,7 +28,7 @@ jobs:
     - uses: fjwillemsen/setup-nox2@v3.0.0
     - name: Run lint check
       run: nox -s lint
-  typechecks:
+  type_check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -37,7 +37,7 @@ jobs:
     - uses: fjwillemsen/setup-nox2@v3.0.0
     - name: Run type check
       run: nox -s typecheck
-  formatchecks:
+  format_check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -46,7 +46,7 @@ jobs:
     - uses: fjwillemsen/setup-nox2@v3.0.0
     - name: Run formatting check
       run: nox -s formatcheck
-  importschecks:
+  imports_check:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -57,10 +57,10 @@ jobs:
       run: nox -s importscheck
   test:
     needs: 
-      - linting
-      - typechecks
-      - formatchecks
-      - importschecks
+      - linting_check
+      - type_check
+      - format_check
+      - imports_check
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     services:
