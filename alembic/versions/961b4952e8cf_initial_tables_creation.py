@@ -20,9 +20,7 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-
 def upgrade() -> None:
-    op.execute("create sequence TASK_ID_SEQ")
 
     user_table = op.create_table(
         "user",
