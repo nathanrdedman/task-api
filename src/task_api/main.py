@@ -1,10 +1,17 @@
+"""Main FastAPI file"""
+
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic.types import List
-from sqlalchemy.orm import Session
+from fastapi import (
+    Depends,
+    FastAPI,
+    HTTPException,
+    status,
+)  # pylint: disable=import-error
+from fastapi.security import OAuth2PasswordRequestForm  # pylint: disable=import-error
+from pydantic.types import List  # pylint: disable=import-error
+from sqlalchemy.orm import Session  # pylint: disable=import-error
 
 from task_api.api.schema import Task, TaskCreate, Token, User, UserCreate
 from task_api.auth.oauth import (
@@ -28,8 +35,23 @@ from task_api.db.operation import (
 app = FastAPI()
 
 
-@app.get("/healthz")
+@app.get("/")
 async def root():
+    return {
+        "info": "API to CRUD operations for task management",
+        "urls": {"/docs": "REST Documentation (Swagger)", "/healthz": "Status check"},
+    }
+
+
+@app.get("/healthz")
+async def healthz():
+    """Status check for API
+    Used when part of deployment (k8s) for
+    pod health
+
+    Returns:
+        dict: status message
+    """
     return {"status": "OK"}
 
 
