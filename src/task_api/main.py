@@ -104,7 +104,8 @@ async def task_status(
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to update task status ({task_id=}) for user '{current_user.username}': {err}",
+            detail=f"Failed to update task status ({task_id=}\
+            for user '{current_user.username}': {err}",
         )
     return updated_task
 
@@ -180,7 +181,7 @@ async def login_for_access_token(
     """Given a set of user credentials
 
     Args:
-        form_data (Annotated[OAuth2PasswordRequestForm, Depends): Form data contained username / password
+        form_data: Form data contained username / password
 
     Raises:
         HTTPException: Username or password incorrect or not found
@@ -247,6 +248,7 @@ async def create_user(
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to create new user '{create_user.username}': Username or email already exists!",
+            detail=f"Failed to create new user '{create_user.username}':\
+                Username or email already exists!",
         )
     return created_user

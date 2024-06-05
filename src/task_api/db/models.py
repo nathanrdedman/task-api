@@ -31,6 +31,8 @@ class User(Base):
 
 
 class Task(Base):
+    """Tasks table"""
+
     OPTIONS = STATUS_OPTIONS
     __tablename__ = "task"
 
