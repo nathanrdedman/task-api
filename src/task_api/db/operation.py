@@ -1,3 +1,5 @@
+# pylint: disable=E0401
+"""Database operation methods"""
 from typing import List, Union
 
 from sqlalchemy.orm import Session
@@ -57,14 +59,14 @@ def new_user(db: Session, user: schema.UserCreate) -> models.User:
         models.User: Newly created user object
     """
     hashpassword = hash_password(user.password)
-    new_user = models.User(
+    new_user_to_create = models.User(
         email=user.email, hashed_password=hashpassword, username=user.username
     )
-    db.add(new_user)
+    db.add(new_user_to_create)
     db.commit()
-    db.refresh(new_user)
+    db.refresh(new_user_to_create)
 
-    return new_user
+    return new_user_to_create
 
 
 def read_task(db: Session, task_id: int, user_id: int) -> models.Task:

@@ -10,7 +10,7 @@ from fastapi import (  # pylint: disable=import-error
     status,
 )
 from fastapi.security import OAuth2PasswordRequestForm  # pylint: disable=import-error
-from pydantic.types import List  # pylint: disable=import-error
+from pydantic.types import List, Sequence  # pylint: disable=import-error
 from sqlalchemy.orm import Session  # pylint: disable=import-error
 
 from task_api.api.schema import Task, TaskCreate, Token, User, UserCreate
@@ -19,9 +19,8 @@ from task_api.auth.oauth import (
     authenticate_user,
     create_access_token,
     get_current_active_user,
-    oauth2_scheme,
 )
-from task_api.db.connect import engine, get_db
+from task_api.db.connect import get_db
 from task_api.db.operation import (
     archive_task,
     modify_task_status,
@@ -37,6 +36,11 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
+    """Base route response
+
+    Returns:
+        dict: URL routes
+    """
     return {
         "info": "API to CRUD operations for task management",
         "urls": {"/docs": "REST Documentation (Swagger)", "/healthz": "Status check"},
@@ -79,7 +83,7 @@ async def create_task(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to create task for user '{current_user.username}': {err}",
-        )
+        ) from err
     return task
 
 
@@ -107,7 +111,7 @@ async def get_task(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Task ({task_id=}) not found for user '{current_user.username}': {err}",
-        )
+        ) from err
     return task
 
 
@@ -134,13 +138,13 @@ async def delete_task(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to delete task ({task_id=}) for user '{current_user.username}': {err}",
-        )
+        ) from err
     return archived_task
 
 
 @app.get("/task_status")
 async def get_task_status(
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    _: Annotated[User, Depends(get_current_active_user)],
 ) -> dict:
     """Given an authenticated user return the possible
     status options as a dictionary:
@@ -162,7 +166,7 @@ async def task_status(
     update_status: str,
     db: Session = Depends(get_db),
 ) -> Task:
-    """_summary_
+    """Update the status of a task
 
     Args:
         task_id (int): Task ID
@@ -183,16 +187,28 @@ async def task_status(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to update task status ({task_id=}\
             for user '{current_user.username}': {err}",
-        )
+        ) from err
     return updated_task
 
 
 @app.get("/task/", response_model=List[Task])
 async def get_tasks(
+    skip: int,
+    limit: int,
     current_user: Annotated[User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
-):
-    return read_tasks(db=db, user_id=current_user.id)
+) -> Sequence[Task]:
+    """For an authenticated user to retrieve the
+    full list of tasks with pagination.
+
+    Args:
+        skip (int): Offset for pagination
+        limit (int): Max page size for pagination
+
+    Returns:
+        List[Task]: List of tasks
+    """
+    return read_tasks(db=db, user_id=current_user.id, skip=skip, limit=limit)
 
 
 @app.post("/token")
@@ -230,8 +246,7 @@ async def login_for_access_token(
 
 @app.get("/user", response_model=User)
 async def get_user(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-    db: Session = Depends(get_db),
+    current_user: Annotated[User, Depends(get_current_active_user)]
 ) -> User:
     """Return the currently authenticated user details
 
@@ -246,8 +261,8 @@ async def get_user(
 
 @app.post("/user", response_model=User)
 async def create_user(
-    create_user: UserCreate,
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    user_to_create: UserCreate,
+    _: Annotated[User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
 ) -> User:
     """Create a new user with the supplied username, password and email.
@@ -269,11 +284,11 @@ async def create_user(
         User: Newly created user details (with ID)
     """
     try:
-        created_user = new_user(db=db, user=create_user)
+        created_user = new_user(db=db, user=user_to_create)
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to create new user '{create_user.username}':\
+            detail=f"Failed to create new user '{user_to_create.username}':\
                 Username or email already exists!",
-        )
+        ) from err
     return created_user

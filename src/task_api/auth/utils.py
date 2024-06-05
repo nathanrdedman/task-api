@@ -1,3 +1,5 @@
+# pylint: disable=E0401
+"""Util functions to support auth methods"""
 import bcrypt
 from passlib.context import CryptContext
 

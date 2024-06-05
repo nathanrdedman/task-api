@@ -1,3 +1,5 @@
+# pylint: disable=E0401
+"""Methods to support connection to a database"""
 import os
 from typing import Any, Generator
 

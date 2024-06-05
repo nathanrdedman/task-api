@@ -1,3 +1,5 @@
+# pylint: disable=E0401
+"""Module with functions supporting OAuth and JWT authentication"""
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 
@@ -52,7 +54,8 @@ def create_access_token(
 
     Args:
         data (dict): Data dict of
-        expires_delta (Union[timedelta, None], optional): Time window for expiration. Defaults to None.
+        expires_delta (Union[timedelta, None], optional):\
+            Time window for expiration. Defaults to None.
 
     Returns:
         str: Encoded JWT token
@@ -79,12 +82,10 @@ async def get_current_user(
         db (Session, optional): DB session. Defaults to Depends(get_db).
 
     Raises:
-        credentials_exception: _description_
-        credentials_exception: _description_
-        credentials_exception: _description_
+        credentials_exception:
 
     Returns:
-        User: _description_
+        User: authenticated user
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -97,10 +98,13 @@ async def get_current_user(
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
+    except InvalidTokenError as err:
+        raise credentials_exception from err
 
-    user = get_user_by_username(db, username=token_data.username)
+    user = None
+
+    if token_data.username:
+        user = get_user_by_username(db, username=token_data.username)
 
     if user is None:
         raise credentials_exception

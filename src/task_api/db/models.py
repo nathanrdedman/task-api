@@ -1,7 +1,6 @@
-from typing import List
-
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, Sequence, String
-from sqlalchemy.orm import relationship
+# pylint: disable=E0401,C0115,R0903
+"""ORM model definitions"""
+from sqlalchemy import Column, ForeignKey, Integer, Sequence, String
 from sqlalchemy_utils import ChoiceType, EmailType
 
 from .connect import Base
