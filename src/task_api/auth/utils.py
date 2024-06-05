@@ -1,9 +1,6 @@
 # pylint: disable=E0401
 """Util functions to support auth methods"""
 import bcrypt
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def hash_password(password: str) -> str:

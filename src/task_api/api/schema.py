@@ -43,7 +43,7 @@ class Task(TaskBase):
 
         return None
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -52,7 +52,7 @@ class User(BaseModel):
     username: str
     email: str
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -60,3 +60,10 @@ class UserCreate(BaseModel):
     password: str
     username: str
     email: str
+
+
+class UserInDB(BaseModel):
+    password: str
+    username: str
+    email: str
+    hashed_password: str

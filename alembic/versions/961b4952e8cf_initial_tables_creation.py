@@ -9,7 +9,7 @@ Create Date: 2024-06-04 12:20:29.623320
 from typing import Sequence, Union
 
 import sqlalchemy as sa
-from sqlalchemy import Date, Integer, MetaData, Sequence, String
+from sqlalchemy import Sequence as SQL_Sequence
 
 from alembic import op
 from task_api.auth.utils import hash_password
@@ -36,7 +36,9 @@ def upgrade() -> None:
 
     op.create_table(
         "task",
-        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column(
+            "id", sa.Integer, primary_key=True, nullable=False, autoincrement=True
+        ),
         sa.Column("description", sa.String(1000), nullable=False),
         sa.Column("user_id", sa.Integer()),
         sa.Column("status", sa.String(15), nullable=False),
@@ -48,14 +50,6 @@ def upgrade() -> None:
         sa.Column("description", sa.String(1000), nullable=False),
         sa.Column("user_id", sa.Integer()),
         sa.Column("status", sa.String(15), nullable=False),
-    )
-
-    op.create_foreign_key(
-        "fk_",
-        "location_messages",
-        "campaigns",
-        ["campaign_id"],
-        ["id"],
     )
 
     op.bulk_insert(

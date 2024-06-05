@@ -1,7 +1,7 @@
 """Main FastAPI file"""
 
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import (  # pylint: disable=import-error
     Depends,
@@ -10,7 +10,7 @@ from fastapi import (  # pylint: disable=import-error
     status,
 )
 from fastapi.security import OAuth2PasswordRequestForm  # pylint: disable=import-error
-from pydantic.types import List, Sequence  # pylint: disable=import-error
+from pydantic.types import List  # pylint: disable=import-error
 from sqlalchemy.orm import Session  # pylint: disable=import-error
 
 from task_api.api.schema import Task, TaskCreate, Token, User, UserCreate
@@ -193,11 +193,11 @@ async def task_status(
 
 @app.get("/task/", response_model=List[Task])
 async def get_tasks(
-    skip: int,
-    limit: int,
+    skip: Optional[int],
+    limit: Optional[int],
     current_user: Annotated[User, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
-) -> Sequence[Task]:
+) -> List[Task]:
     """For an authenticated user to retrieve the
     full list of tasks with pagination.
 
@@ -208,7 +208,7 @@ async def get_tasks(
     Returns:
         List[Task]: List of tasks
     """
-    return read_tasks(db=db, user_id=current_user.id, skip=skip, limit=limit)
+    return read_tasks(db=db, user_id=current_user.id, skip=skip, limit=limit)  # type: ignore
 
 
 @app.post("/token")

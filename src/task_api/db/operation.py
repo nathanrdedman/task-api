@@ -36,7 +36,9 @@ def get_user_by_username(db, username: str) -> Union[models.User, None]:
 
 
 def get_user_by_email(db: Session, email: str) -> Union[models.User, None]:
-    """_summary_
+    """Get the user object by email address.
+    Will return one due to unique constraint on the
+    email field in the User table.
 
     Args:
         db (Session): Database session
@@ -146,7 +148,7 @@ def archive_task(db: Session, task_id: int, user_id: int) -> models.Task:
     """
     task = read_task(db=db, task_id=task_id, user_id=user_id)
 
-    deleted_task = models.DeletedTask(**task.dict())
+    deleted_task = models.DeletedTask(**task.to_dict())
 
     db.add(deleted_task)
     db.delete(task)

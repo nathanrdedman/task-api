@@ -1,4 +1,5 @@
 FROM python:3.10-slim
+ARG SQLALCHEMY_DATABASE_URL
 
 WORKDIR /opt/app
 

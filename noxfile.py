@@ -5,31 +5,30 @@ PY_VERSIONS = ["3.9", "3.10"]
 
 @nox.session(python=PY_VERSIONS)
 def formatcheck(session):
-    session.install("black")
+    session.install(".[develop]")
     session.run("black", "--check", "src/", "tests/")
 
 
 @nox.session(python=PY_VERSIONS)
 def typecheck(session):
-    session.install("mypy")
-    # session.run("pip", "install", "-r", "mypy_requirements.txt")
-    # session.run("mypy", "--install-types", "--non-interactive")
+    session.install(".[develop]")
     session.run("mypy", "--no-namespace-packages", "src/", "tests/")
 
 
 @nox.session(python=PY_VERSIONS)
 def lint(session):
-    session.install("pylint")
-    session.run("pylint", "src/", "tests/")
+    session.install(".[develop]")
+    session.run("pylint", "src/")
 
 
 @nox.session(python=PY_VERSIONS)
 def importscheck(session):
-    session.install("isort")
+    session.install(".[develop]")
     session.run("isort", "--check", "src/", "tests/")
 
 
 @nox.session(python=PY_VERSIONS)
 def test(session):
-    session.install("pytest")
+    session.install(".[develop]")
+    session.install("-e", ".")
     session.run("pytest", "tests/")
