@@ -40,6 +40,12 @@ develop = [
 
 [tool.mypy]
 ignore_missing_imports = true
+cache_dir = ".cache/mypy_cache"
+files = [
+    'src/',
+    'tests/',
+    'noxfile.py',
+]
 
 [tool.isort]
 profile = "black"
