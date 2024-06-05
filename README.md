@@ -43,7 +43,9 @@ Navigate to [localhost:8080/docs](localhost:8080/docs) to find the automatically
 
 To interact with the API, you will need to authenicate. User [fixtures have been created for testing](https://github.com/nathanrdedman/task-api/blob/main/alembic/versions/961b4952e8cf_initial_tables_creation.py#L53) allowing you to authenticate and generate a JWT (automatically handled and passed the Swagger test methods). This was adapted from the FastAPI auth starter guide.
 
-[](images/auth_button.png)
+![auth button](images/auth_button.png)
+![auth modal](images/auth_modal.png)
+![auth granted](images/auth_granted.png)
 
 ## Testing
 To facilitate testing against multiple Python verisons, Nox was employed as the main runner, with two Python sessions defined (3.9, 3.10).
