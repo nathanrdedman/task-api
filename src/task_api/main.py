@@ -3,12 +3,12 @@
 from datetime import timedelta
 from typing import Annotated
 
-from fastapi import (
+from fastapi import (  # pylint: disable=import-error
     Depends,
     FastAPI,
     HTTPException,
     status,
-)  # pylint: disable=import-error
+)
 from fastapi.security import OAuth2PasswordRequestForm  # pylint: disable=import-error
 from pydantic.types import List  # pylint: disable=import-error
 from sqlalchemy.orm import Session  # pylint: disable=import-error
