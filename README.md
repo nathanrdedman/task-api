@@ -1,7 +1,7 @@
 # task-api
 
 ## Introduction
-This Python based REST API features methods to support CRUDs operations for managing multiple users and tasks. It also features the creation of new users, JWT based authentication to ensure permissions on tasks.
+This Python based REST API features methods to support CRUDs operations for managing multiple users and tasks. It also features the creation of new users and JWT based authentication to ensure permissions on tasks.
 
 ## Code
 The following main Python packages were used:
@@ -34,6 +34,8 @@ initall migration to create the database and copy in some fixtures:
 or
 
 `SQLALCHEMY_DATABASE_URL="sqlite:///task_api.db" alembic upgrade head`
+
+_NB: There is a single migration file - no further schema modifications were made in the alloted time._
 
 To start the API up:
 
@@ -71,3 +73,8 @@ Sessions defined in /home/nathan/code/task-api/noxfile.py:
 sessions marked with * are selected, sessions marked with - are skipped.
 ```
 Single sessions can be run using `nox -s <step name>`.
+
+## Deployment
+There is a Docker file present which has an associated GitHub action to build tagged releases. The images are not currently persisted anywhere but would hopefully be stored in AWS ECR and deployed to a test cluster using a compatiable RDS instance.
+
+I would have liked to have a live endpoint available!
