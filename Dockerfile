@@ -14,5 +14,5 @@ RUN apt-get update \
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY deploy/run.sh /run.sh
-RUN chmod +x  /start.sh
+RUN chmod +x  /run.sh
 CMD ["/run.sh"]
